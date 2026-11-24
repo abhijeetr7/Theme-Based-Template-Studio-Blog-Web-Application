@@ -76,6 +76,62 @@
       box-shadow: none;
     }
 
+    .blog-card-glass {
+      background-color: color-mix(in srgb, var(--bg-surface) 72%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+    }
+
+    .blog-card-minimal-line {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      box-shadow: none;
+    }
+
+    /* ==========================================================================
+       NEW LAYOUT ENGINES: CHANGELOG TIMELINE, NEWSLETTER DIGEST, PORTFOLIO GRID
+       ========================================================================== */
+    .layout-timeline {
+      position: relative;
+      padding-left: 2.25rem;
+      border-left: 2px solid var(--accent-color);
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .timeline-node {
+      position: relative;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -2.68rem;
+      top: 1.5rem;
+      width: 14px;
+      height: 14px;
+      border-radius: 9999px;
+      background-color: var(--accent-color);
+      border: 3px solid var(--bg-primary);
+      box-shadow: 0 0 0 2px var(--accent-color);
+    }
+
+    .newsletter-issue-row {
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    .newsletter-issue-row:hover {
+      background-color: color-mix(in srgb, var(--accent-color) 6%, transparent);
+    }
+
+    .portfolio-card-overlay {
+      background: linear-gradient(to top, rgba(9, 13, 22, 0.92) 0%, rgba(9, 13, 22, 0.45) 55%, rgba(9, 13, 22, 0.1) 100%);
+    }
+
     .blog-accent-bg {
       background-color: var(--accent-color);
       color: #ffffff;
@@ -135,10 +191,10 @@
 <body class="bg-slate-950 text-slate-100 antialiased selection:bg-amber-500 selection:text-white">
 
   <!-- ==========================================================================
-       TOP STUDIO CONTROL BAR (Dual-Mode Toggle & Status)
+       TOP STUDIO CONTROL BAR (3-Mode Toggle, Status & Quick Publish)
        ========================================================================== -->
   <header class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 sm:px-6 py-3">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+    <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
       <!-- Brand / Studio Title -->
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-rose-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
@@ -149,51 +205,70 @@
         <div>
           <div class="flex items-center gap-2">
             <span class="font-bold text-white tracking-tight text-sm sm:text-base">ThemeCraft</span>
-            <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 border border-slate-700">JSON Engine v2.4</span>
+            <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 border border-slate-700">Studio v3.0</span>
           </div>
-          <p class="text-xs text-slate-400 hidden sm:block" id="topStatusSummary">Live: Editorial Serif • Magazine Hero + Grid</p>
+          <p class="text-xs text-slate-400 hidden md:block" id="topStatusSummary">Live: Editorial Serif • Magazine Hero + Grid</p>
         </div>
       </div>
 
-      <!-- Dual-Mode Switcher (Reader View vs Admin Studio) -->
-      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
-        <button id="btnModeReader" onclick="switchMode('reader')" class="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-slate-900 shadow-sm">
+      <!-- 3-Mode Switcher (Reader View vs Admin Dashboard vs Template Designer Studio) -->
+      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 overflow-x-auto max-w-full">
+        <button id="btnModeReader" onclick="switchMode('reader')" class="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-slate-900 shadow-sm whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
           </svg>
           <span>Reader View</span>
         </button>
-        <button id="btnModeAdmin" onclick="switchMode('admin')" class="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white">
+
+        <button id="btnModeDesigner" onclick="switchMode('designer')" class="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <span>Template Designer Studio</span>
+        </button>
+
+        <button id="btnModeAdmin" onclick="switchMode('admin')" class="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
           </svg>
-          <span>Admin Studio</span>
+          <span>Admin Dashboard</span>
           <span id="unsavedDot" class="hidden w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Unpublished draft changes"></span>
+        </button>
+      </div>
+
+      <!-- Quick Publish CTA -->
+      <div class="hidden xl:flex items-center gap-2">
+        <button onclick="publishToUserView()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>Publish to Reader View</span>
         </button>
       </div>
     </div>
   </header>
 
+  <!-- Dynamic Custom Template CSS Injection Point -->
+  <style id="dynamicReaderTemplateCss"></style>
+  <style id="dynamicDesignerTemplateCss"></style>
+
   <!-- ==========================================================================
-       VIEW 1: READER / USER BLOG VIEW
+       VIEW 1: READER VIEW (LIVE PUBLISHED BLOG)
        ========================================================================== -->
-  <main id="readerView" class="blog-canvas min-h-[calc(100vh-65px)] pb-20">
-    <!-- Dynamic Blog Header -->
+  <main id="readerView" class="blog-canvas min-h-[calc(100vh-65px)] pb-16">
+    <!-- Dynamic Blog Masthead Header -->
     <div id="readerBlogHeader" class="border-b transition-colors duration-300" style="border-color: var(--border-color);">
       <!-- Rendered via JS -->
     </div>
 
-    <!-- Search & Category Filter Bar -->
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-4">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <!-- Category Pills -->
-        <div id="readerCategoryPills" class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-          <!-- Rendered via JS -->
+    <!-- Category Filter & Search Bar -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-2">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div id="readerCategoryPills" class="flex items-center gap-2 overflow-x-auto pb-1">
+          <!-- Category pills injected via JS -->
         </div>
-
-        <!-- Search Input -->
-        <div class="relative w-full md:w-72">
+        <div class="relative w-full sm:w-64">
           <input
             type="text"
             id="readerSearchInput"
@@ -210,7 +285,7 @@
     </div>
 
     <!-- Dynamic Template Content Container -->
-    <section id="readerContentContainer" class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+    <section id="readerContentContainer" class="max-w-6xl mx-auto px-4 sm:px-6 py-6 transition-all duration-300">
       <!-- Rendered dynamically based on activeTemplateId & activeThemeId -->
     </section>
 
@@ -224,7 +299,230 @@
   </main>
 
   <!-- ==========================================================================
-       VIEW 2: ADMIN THEME & TEMPLATE STUDIO
+       VIEW 2: DEDICATED FULL-SCREEN VISUAL TEMPLATE DESIGNER STUDIO (3-PANE)
+       ========================================================================== -->
+  <section id="designerView" class="hidden min-h-[calc(100vh-65px)] bg-slate-950 text-slate-100 flex flex-col">
+    <!-- Designer Top Sub-Header -->
+    <div class="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3">
+      <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 rounded-lg bg-sky-500/15 text-sky-400 border border-sky-500/30 text-xs font-bold uppercase tracking-wider">Visual Template Builder</span>
+          <span class="text-xs text-slate-400 hidden sm:inline">Construct structural layouts, configure slots, preview across viewports & save to library</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="createNewBlankTemplateInDesigner()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition">
+            + New Blank Template
+          </button>
+          <button onclick="saveDesignedTemplateToLibrary(false)" class="px-3.5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs transition">
+            Save to Template Library
+          </button>
+          <button onclick="saveDesignedTemplateToLibrary(true)" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition">
+            Save & Apply to Live Blog
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3-Pane Workspace -->
+    <div class="max-w-[1600px] w-full mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0">
+
+      <!-- PANE 1 (LEFT - 3 Cols): COMPONENT & LAYOUT INSPECTOR -->
+      <aside class="lg:col-span-3 bg-slate-900/70 border-r border-slate-800 p-4 space-y-5 overflow-y-auto lg:max-h-[calc(100vh-122px)]">
+        <!-- Template Identity -->
+        <div class="space-y-2.5">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">1. Template Identity</label>
+          <input type="text" id="desTplName" oninput="updateDesignerField('name', this.value)" placeholder="Template Name (e.g., Release Notes)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-sky-500" />
+          <input type="text" id="desTplDesc" oninput="updateDesignerField('description', this.value)" placeholder="Short description of this layout..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 outline-none focus:border-sky-500" />
+        </div>
+
+        <!-- 7 Layout Engines Visual Picker -->
+        <div class="space-y-2.5 pt-3 border-t border-slate-800">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">2. Layout Engine (7 Architectures)</label>
+          <div id="designerLayoutPicker" class="grid grid-cols-1 gap-2">
+            <!-- Populated via JS with mini wireframe icons -->
+          </div>
+        </div>
+
+        <!-- Grid, Spacing & Container Width -->
+        <div class="space-y-3 pt-3 border-t border-slate-800">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">3. Grid & Spatial Proportions</label>
+
+          <!-- Columns (1-4) -->
+          <div>
+            <div class="flex justify-between text-xs text-slate-400 mb-1">
+              <span>Desktop Columns</span>
+              <span id="desColLabel" class="font-mono text-sky-400">2 Cols</span>
+            </div>
+            <div class="grid grid-cols-4 gap-1.5">
+              <button type="button" onclick="updateDesignerRule('columns', 1)" id="desColBtn-1" class="des-col-btn py-1.5 rounded-lg text-xs font-semibold border border-slate-800 bg-slate-950 text-slate-400">1</button>
+              <button type="button" onclick="updateDesignerRule('columns', 2)" id="desColBtn-2" class="des-col-btn py-1.5 rounded-lg text-xs font-semibold border border-slate-800 bg-slate-950 text-slate-400">2</button>
+              <button type="button" onclick="updateDesignerRule('columns', 3)" id="desColBtn-3" class="des-col-btn py-1.5 rounded-lg text-xs font-semibold border border-slate-800 bg-slate-950 text-slate-400">3</button>
+              <button type="button" onclick="updateDesignerRule('columns', 4)" id="desColBtn-4" class="des-col-btn py-1.5 rounded-lg text-xs font-semibold border border-slate-800 bg-slate-950 text-slate-400">4</button>
+            </div>
+          </div>
+
+          <!-- Card Gap & Container Width -->
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Card Gap</label>
+              <select id="desCardGap" onchange="updateDesignerRule('cardGap', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-sky-500">
+                <option value="compact">Compact (12px)</option>
+                <option value="normal">Normal (24px)</option>
+                <option value="airy">Airy (36px)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Container Width</label>
+              <select id="desContainerWidth" onchange="updateDesignerRule('containerWidth', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-sky-500">
+                <option value="narrow">Narrow (768px)</option>
+                <option value="standard">Standard (1152px)</option>
+                <option value="wide">Wide (1400px)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Card Surface Style & Aspect Ratio -->
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Card Surface</label>
+              <select id="desCardStyle" onchange="updateDesignerRule('cardStyle', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-sky-500">
+                <option value="elevated">Elevated Shadow</option>
+                <option value="bordered">2px Bordered</option>
+                <option value="glass">Frosted Glass</option>
+                <option value="minimal-line">Minimal Outline</option>
+                <option value="flat">Flat Divider</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Image Aspect</label>
+              <select id="desAspectRatio" onchange="updateDesignerRule('imageAspect', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-sky-500">
+                <option value="16:9">16:9 Widescreen</option>
+                <option value="4:3">4:3 Editorial</option>
+                <option value="1:1">1:1 Square</option>
+                <option value="none">Hidden / None</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Header Alignment -->
+          <div>
+            <label class="block text-[11px] text-slate-400 mb-1">Masthead Header Alignment</label>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button type="button" onclick="updateDesignerRule('headerAlign', 'left')" id="desAlignBtn-left" class="des-align-btn py-1.5 rounded-lg text-xs font-medium border border-slate-800 bg-slate-950 text-slate-400">Left</button>
+              <button type="button" onclick="updateDesignerRule('headerAlign', 'center')" id="desAlignBtn-center" class="des-align-btn py-1.5 rounded-lg text-xs font-medium border border-slate-800 bg-slate-950 text-slate-400">Center</button>
+              <button type="button" onclick="updateDesignerRule('headerAlign', 'split')" id="desAlignBtn-split" class="des-align-btn py-1.5 rounded-lg text-xs font-medium border border-slate-800 bg-slate-950 text-slate-400">Split</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component Slot Visibility Toggles -->
+        <div class="space-y-2 pt-3 border-t border-slate-800">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">4. Slot Visibility Toggles</label>
+          <div class="space-y-1.5">
+            <label class="flex items-center justify-between bg-slate-950 px-3 py-2 rounded-lg border border-slate-800 cursor-pointer">
+              <span class="text-xs text-slate-300">Featured Hero Banner</span>
+              <input type="checkbox" id="desShowHero" onchange="updateDesignerRule('showHero', this.checked)" class="accent-sky-500 w-4 h-4" />
+            </label>
+            <label class="flex items-center justify-between bg-slate-950 px-3 py-2 rounded-lg border border-slate-800 cursor-pointer">
+              <span class="text-xs text-slate-300">Sidebar Widgets</span>
+              <input type="checkbox" id="desShowSidebar" onchange="updateDesignerRule('showSidebar', this.checked)" class="accent-sky-500 w-4 h-4" />
+            </label>
+            <label class="flex items-center justify-between bg-slate-950 px-3 py-2 rounded-lg border border-slate-800 cursor-pointer">
+              <span class="text-xs text-slate-300">Cover Images</span>
+              <input type="checkbox" id="desShowImages" onchange="updateDesignerRule('showImages', this.checked)" class="accent-sky-500 w-4 h-4" />
+            </label>
+            <label class="flex items-center justify-between bg-slate-950 px-3 py-2 rounded-lg border border-slate-800 cursor-pointer">
+              <span class="text-xs text-slate-300">Article Excerpts</span>
+              <input type="checkbox" id="desShowExcerpts" onchange="updateDesignerRule('showExcerpts', this.checked)" class="accent-sky-500 w-4 h-4" />
+            </label>
+            <label class="flex items-center justify-between bg-slate-950 px-3 py-2 rounded-lg border border-slate-800 cursor-pointer">
+              <span class="text-xs text-slate-300">Category / Version Badges</span>
+              <input type="checkbox" id="desShowBadges" onchange="updateDesignerRule('showBadges', this.checked)" class="accent-sky-500 w-4 h-4" />
+            </label>
+            <label class="flex items-center justify-between bg-slate-950 px-3 py-2 rounded-lg border border-slate-800 cursor-pointer">
+              <span class="text-xs text-slate-300">Author & Date Meta</span>
+              <input type="checkbox" id="desShowMeta" onchange="updateDesignerRule('showMeta', this.checked)" class="accent-sky-500 w-4 h-4" />
+            </label>
+            <label class="flex items-center justify-between bg-slate-950 px-3 py-2 rounded-lg border border-slate-800 cursor-pointer">
+              <span class="text-xs text-slate-300">Read Time / Metric Pill</span>
+              <input type="checkbox" id="desShowReadTime" onchange="updateDesignerRule('showReadTime', this.checked)" class="accent-sky-500 w-4 h-4" />
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- PANE 2 (CENTER - 6 Cols): MULTI-VIEWPORT INTERACTIVE LIVE CANVAS -->
+      <main class="lg:col-span-6 bg-slate-950 flex flex-col border-r border-slate-800 lg:max-h-[calc(100vh-122px)]">
+        <!-- Canvas Toolbar: Viewport Switcher & Theme Test Dropdown -->
+        <div class="bg-slate-900/90 border-b border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+          <!-- Viewport Buttons -->
+          <div class="flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800">
+            <button onclick="setDesignerViewport('desktop')" id="vpBtn-desktop" class="vp-btn px-2.5 py-1 rounded text-xs font-medium bg-sky-500 text-slate-950">Desktop (100%)</button>
+            <button onclick="setDesignerViewport('tablet')" id="vpBtn-tablet" class="vp-btn px-2.5 py-1 rounded text-xs font-medium text-slate-400 hover:text-white">Tablet (768px)</button>
+            <button onclick="setDesignerViewport('mobile')" id="vpBtn-mobile" class="vp-btn px-2.5 py-1 rounded text-xs font-medium text-slate-400 hover:text-white">Mobile (375px)</button>
+          </div>
+
+          <!-- Theme Preview Selector -->
+          <div class="flex items-center gap-2">
+            <label class="text-[11px] text-slate-400">Test Theme:</label>
+            <select id="designerThemeSelect" onchange="renderDesignerCanvas()" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-white outline-none focus:border-sky-500">
+              <!-- Populated via JS -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Scrollable Live Canvas Container -->
+        <div class="flex-1 overflow-auto p-4 sm:p-6 flex justify-center items-start bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px]">
+          <div id="designerViewportFrame" class="w-full transition-all duration-300 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
+            <div id="designerLiveCanvas" class="blog-canvas min-h-[540px]">
+              <!-- Live Template Rendered Here -->
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- PANE 3 (RIGHT - 3 Cols): TEMPLATE JSON SCHEMA & CUSTOM CSS SLOT -->
+      <aside class="lg:col-span-3 bg-slate-900/70 p-4 flex flex-col gap-4 overflow-y-auto lg:max-h-[calc(100vh-122px)]">
+        <!-- Custom CSS Override Box -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Scoped Custom CSS</label>
+            <span class="text-[10px] font-mono text-sky-400">.custom-tpl-scope</span>
+          </div>
+          <textarea
+            id="desCustomCssInput"
+            rows="6"
+            oninput="updateDesignerRule('customCss', this.value)"
+            placeholder="/* Example: */&#10;.custom-tpl-scope .blog-heading { letter-spacing: -0.03em; }"
+            spellcheck="false"
+            class="w-full bg-slate-950 text-sky-300 font-mono text-xs p-3 rounded-xl border border-slate-800 outline-none focus:border-sky-500"
+          ></textarea>
+        </div>
+
+        <!-- Live Template JSON Schema -->
+        <div class="flex-1 flex flex-col space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Template JSON Schema</label>
+            <button onclick="copyDesignerTemplateJson()" class="text-[11px] text-amber-400 hover:underline font-medium">Copy JSON</button>
+          </div>
+          <textarea
+            id="desTemplateJsonOutput"
+            rows="14"
+            spellcheck="false"
+            class="w-full flex-1 bg-slate-950 text-emerald-400 font-mono text-[11px] p-3 rounded-xl border border-slate-800 outline-none focus:border-emerald-500 leading-relaxed"
+          ></textarea>
+          <button onclick="importDesignerTemplateJson()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition">
+            Apply Edited JSON to Designer
+          </button>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       VIEW 3: ADMIN THEME, TEMPLATE LIBRARY & POSTS DASHBOARD
        ========================================================================== -->
   <section id="adminView" class="hidden min-h-[calc(100vh-65px)] bg-slate-950 text-slate-100">
     <!-- Admin Sub-Navigation & Publish Action Bar -->
@@ -236,7 +534,7 @@
             1. Theme Manager
           </button>
           <button onclick="switchAdminTab('templates')" id="tabBtn-templates" class="admin-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent whitespace-nowrap">
-            2. Template Studio
+            2. Template Library (<span id="adminTplCount">7</span>)
           </button>
           <button onclick="switchAdminTab('posts')" id="tabBtn-posts" class="admin-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent whitespace-nowrap">
             3. Blog Posts (<span id="adminPostCount">5</span>)
@@ -451,20 +749,20 @@
                 <label class="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800 cursor-pointer">
                   <span class="text-xs font-medium text-slate-300">Cover Images</span>
                   <input type="checkbox" id="tplShowImages" onchange="updateDraftTemplateRule('showImages', this.checked)" class="w-4 h-4 accent-sky-500 rounded" />
-                </label>
-
-                <label class="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800 cursor-pointer">
-                  <span class="text-xs font-medium text-slate-300">Post Excerpts</span>
-                  <input type="checkbox" id="tplShowExcerpts" onchange="updateDraftTemplateRule('showExcerpts', this.checked)" class="w-4 h-4 accent-sky-500 rounded" />
-                </label>
-              </div>
-
-              <!-- Save Custom Named Template -->
-              <div class="pt-3 border-t border-slate-800 flex flex-col sm:flex-row gap-3">
-                <input type="text" id="newCustomTemplateName" placeholder="Custom Template Name (e.g., Compact Digest)..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-sky-500" />
-                <button onclick="saveCustomTemplate()" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs sm:text-sm transition whitespace-nowrap">
-                  + Save Custom Template
+          <!-- TAB 2: TEMPLATE LIBRARY MANAGER -->
+          <div id="adminTab-templates" class="admin-tab-panel hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+              <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div>
+                  <h2 class="text-base font-bold text-white">Template Library (7+ Layouts)</h2>
+                  <p class="text-xs text-slate-400">Apply a layout directly, duplicate it, or open it inside the Visual Template Designer</p>
+                </div>
+                <button onclick="openTemplateDesignerWithNew()" class="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs transition">
+                  + Open Visual Template Designer
                 </button>
+              </div>
+              <div id="templatePresetGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Template Library Cards Injected via JS -->
               </div>
             </div>
           </div>
@@ -502,17 +800,22 @@
 
                 <div>
                   <label class="block text-xs text-slate-400 mb-1">Category</label>
-                  <input type="text" id="postCategoryInput" placeholder="Design, Engineering, Culture..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white outline-none focus:border-amber-500" />
+                  <input type="text" id="postCategoryInput" placeholder="Design, Release, Case Study..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white outline-none focus:border-amber-500" />
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs text-slate-400 mb-1">Version / Metric Tag (For Changelog & Portfolio)</label>
+                  <input type="text" id="postVersionTagInput" placeholder="e.g., v3.2.0 or +42% Conversion" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white outline-none focus:border-amber-500" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 sm:col-span-2">
                   <div>
                     <label class="block text-xs text-slate-400 mb-1">Author</label>
-                    <input type="text" id="postAuthorInput" placeholder="Elena Vance" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-amber-500" />
+                    <input type="text" id="postAuthorInput" placeholder="Elena Vance" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white outline-none focus:border-amber-500" />
                   </div>
                   <div>
                     <label class="block text-xs text-slate-400 mb-1">Read Time</label>
-                    <input type="text" id="postReadTimeInput" placeholder="5 min read" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-amber-500" />
+                    <input type="text" id="postReadTimeInput" placeholder="5 min read" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white outline-none focus:border-amber-500" />
                   </div>
                 </div>
 
@@ -752,13 +1055,21 @@
           description: "Full-width spotlight story at top followed by a balanced multi-column grid.",
           isBuiltIn: true,
           rules: {
-            layoutType: "magazine",
+            layoutType: "hero-grid",
             columns: 2,
+            cardGap: "normal",
+            containerWidth: "standard",
             showHero: true,
+            showSidebar: false,
             showImages: true,
             showExcerpts: true,
+            showBadges: true,
+            showMeta: true,
+            showReadTime: true,
             cardStyle: "elevated",
-            headerAlign: "left"
+            imageAspect: "16:9",
+            headerAlign: "left",
+            customCss: ""
           }
         },
         {
@@ -767,28 +1078,44 @@
           description: "Focused, distraction-free vertical reading stream with centered masthead.",
           isBuiltIn: true,
           rules: {
-            layoutType: "stream",
+            layoutType: "single-stream",
             columns: 1,
+            cardGap: "airy",
+            containerWidth: "narrow",
             showHero: false,
+            showSidebar: false,
             showImages: true,
             showExcerpts: true,
+            showBadges: true,
+            showMeta: true,
+            showReadTime: true,
             cardStyle: "bordered",
-            headerAlign: "center"
+            imageAspect: "16:9",
+            headerAlign: "center",
+            customCss: ""
           }
         },
         {
           id: "bento-cards",
-          name: "Masonry / Bento Cards",
+          name: "Asymmetric Bento / Masonry",
           description: "Dynamic 3-column bento grid showcasing high visual density and crisp cards.",
           isBuiltIn: true,
           rules: {
-            layoutType: "bento",
+            layoutType: "bento-masonry",
             columns: 3,
+            cardGap: "normal",
+            containerWidth: "wide",
             showHero: true,
+            showSidebar: false,
             showImages: true,
             showExcerpts: true,
+            showBadges: true,
+            showMeta: true,
+            showReadTime: true,
             cardStyle: "elevated",
-            headerAlign: "left"
+            imageAspect: "4:3",
+            headerAlign: "left",
+            customCss: ""
           }
         },
         {
@@ -797,13 +1124,90 @@
           description: "Main editorial feed paired with a sticky curator bio and trending index.",
           isBuiltIn: true,
           rules: {
-            layoutType: "sidebar",
+            layoutType: "split-sidebar",
             columns: 2,
+            cardGap: "normal",
+            containerWidth: "standard",
             showHero: false,
+            showSidebar: true,
             showImages: true,
             showExcerpts: true,
+            showBadges: true,
+            showMeta: true,
+            showReadTime: true,
             cardStyle: "flat",
-            headerAlign: "left"
+            imageAspect: "16:9",
+            headerAlign: "left",
+            customCss: ""
+          }
+        },
+        {
+          id: "changelog-timeline",
+          name: "Changelog & Release Timeline",
+          description: "Vertical timeline with date markers, version badges, and connecting accent line.",
+          isBuiltIn: true,
+          rules: {
+            layoutType: "changelog-timeline",
+            columns: 1,
+            cardGap: "normal",
+            containerWidth: "narrow",
+            showHero: false,
+            showSidebar: false,
+            showImages: false,
+            showExcerpts: true,
+            showBadges: true,
+            showMeta: true,
+            showReadTime: true,
+            cardStyle: "bordered",
+            imageAspect: "none",
+            headerAlign: "left",
+            customCss: ""
+          }
+        },
+        {
+          id: "newsletter-digest",
+          name: "Newsletter Issue Digest",
+          description: "Compact, scannable email-digest list with numbered entries and read-time pills.",
+          isBuiltIn: true,
+          rules: {
+            layoutType: "newsletter-digest",
+            columns: 1,
+            cardGap: "compact",
+            containerWidth: "narrow",
+            showHero: true,
+            showSidebar: false,
+            showImages: false,
+            showExcerpts: true,
+            showBadges: true,
+            showMeta: true,
+            showReadTime: true,
+            cardStyle: "flat",
+            imageAspect: "none",
+            headerAlign: "center",
+            customCss: ""
+          }
+        },
+        {
+          id: "portfolio-grid",
+          name: "Portfolio Case-Study Grid",
+          description: "Visual case-study showcase with tall cover imagery, metric tags, and bold headers.",
+          isBuiltIn: true,
+          rules: {
+            layoutType: "portfolio-grid",
+            columns: 2,
+            cardGap: "airy",
+            containerWidth: "wide",
+            showHero: false,
+            showSidebar: false,
+            showImages: true,
+            showExcerpts: true,
+            showBadges: true,
+            showMeta: false,
+            showReadTime: true,
+            cardStyle: "elevated",
+            imageAspect: "4:3",
+            headerAlign: "split",
+            customCss: ""
           }
         }
       ],
@@ -812,6 +1216,7 @@
           id: "post-1",
           title: "The Architecture of Calm Interfaces in an Era of Noise",
           category: "Design Systems",
+          versionTag: "v3.0 Release",
           author: "Elena Rostova",
           date: "Nov 18, 2026",
           readTime: "6 min read",
@@ -830,6 +1235,7 @@
           id: "post-2",
           title: "Brutalist Concrete & Warm Timber: Tokyo's Micro-Libraries",
           category: "Architecture",
+          versionTag: "Case Study • +94% Dwell",
           author: "Kenji Takahashi",
           date: "Nov 14, 2026",
           readTime: "5 min read",
@@ -847,6 +1253,7 @@
           id: "post-3",
           title: "Zero-Bundle Web Engines: Returning to Browser Primitives",
           category: "Engineering",
+          versionTag: "v2.8.4 Patch",
           author: "Marcus Vance",
           date: "Nov 09, 2026",
           readTime: "8 min read",
@@ -864,6 +1271,7 @@
           id: "post-4",
           title: "Field Notes from the High Atlas: Ceramics & Natural Pigments",
           category: "Craft & Culture",
+          versionTag: "Issue #42",
           author: "Amira Benali",
           date: "Nov 03, 2026",
           readTime: "4 min read",
@@ -878,30 +1286,78 @@
         },
         {
           id: "post-5",
-          title: "The Slow Productivity Manifesto for Creative Teams",
-          category: "Culture",
+          title: "Redesigning Nordic Fintech Checkout: Reducing Friction by 48%",
+          category: "Product Design",
+          versionTag: "Case Study • -48% Dropoff",
           author: "Claire Dubois",
           date: "Oct 27, 2026",
           readTime: "7 min read",
           featured: false,
-          coverImage: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=80",
-          excerpt: "Replacing frantic status updates with deep seasonal cycles, asynchronous writing, and deliberate craft.",
+          coverImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
+          excerpt: "A deep-dive retrospective on consolidating a six-step enterprise verification flow into a single progressive disclosure card.",
           content: `
-            <p>When every message is marked urgent, nothing truly matters. Creative breakthroughs rarely happen in fifteen-minute gaps between video calls.</p>
-            <h2>Protecting Deep Work</h2>
-            <p>Teams that transition to asynchronous written proposals make clearer architectural decisions and report dramatically higher satisfaction with their craft.</p>
+            <p>Enterprise financial onboarding often suffers from accumulated regulatory checkboxes that overwhelm first-time users.</p>
+            <h2>Progressive Verification</h2>
+            <p>By grouping identity checks into contextual stages and providing real-time validation feedback, completion rates jumped by 48% within two weeks of launch.</p>
           `
         }
       ]
     };
+    // UI Filter & Designer States
+    let currentMode = "reader"; // 'reader' | 'designer' | 'admin'
+    let activeCategoryFilter = "All";
+    let searchQuery = "";
+    let presetCoverIndex = 0;
 
-    const PRESET_COVER_IMAGES = [
-      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80"
+    // Dedicated Visual Template Designer Working Object
+    let designerTemplate = deepClone(DEFAULT_BLOG_STATE.templates[0]);
+    let designerViewport = "desktop"; // 'desktop' | 'tablet' | 'mobile'
+
+    /**
+     * Switch top-level application mode between 'reader', 'designer', and 'admin'
+     */
+    function switchMode(mode) {
+      currentMode = mode;
+      const views = {
+        reader: document.getElementById("readerView"),
+        designer: document.getElementById("designerView"),
+        admin: document.getElementById("adminView")
+      };
+      const buttons = {
+        reader: document.getElementById("btnModeReader"),
+        designer: document.getElementById("btnModeDesigner"),
+        admin: document.getElementById("btnModeAdmin")
+      };
+
+      const activeBtnClass = "flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-slate-900 shadow-sm whitespace-nowrap";
+      const inactiveBtnClass = "flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white whitespace-nowrap";
+
+      Object.keys(views).forEach(key => {
+        if (views[key]) {
+          views[key].classList.toggle("hidden", key !== mode);
+        }
+        if (buttons[key]) {
+          buttons[key].className = key === mode ? activeBtnClass : inactiveBtnClass;
+        }
+      });
+
+      if (mode === "reader") {
+        renderReaderView();
+      } else if (mode === "designer") {
+        initTemplateDesigner();
+      } else if (mode === "admin") {
+        syncAdminStudioUI();
+      }
+    }
+
+    const LAYOUT_ENGINE_CATALOG = [
+      { id: "hero-grid", name: "Magazine Hero + Grid", desc: "Spotlight hero + multi-column cards" },
+      { id: "single-stream", name: "Classic Single Stream", desc: "Focused vertical editorial flow" },
+      { id: "bento-masonry", name: "Asymmetric Bento Grid", desc: "Varied span high-density cards" },
+      { id: "split-sidebar", name: "Split Sidebar Editorial", desc: "Main feed + sticky curator widgets" },
+      { id: "changelog-timeline", name: "Changelog Timeline", desc: "Vertical release line & version badges" },
+      { id: "newsletter-digest", name: "Newsletter Digest", desc: "Numbered scannable issue entries" },
+      { id: "portfolio-grid", name: "Portfolio Case-Study Grid", desc: "Visual cover cards with metric overlays" }
     ];
 
     const STORAGE_KEY = "themecraft_blog_published_state_v1";
@@ -910,12 +1366,6 @@
     let publishedState = loadInitialState();
     // Working Draft State (Edited in Admin Studio until "Publish & Apply" is clicked)
     let draftState = deepClone(publishedState);
-
-    // UI Filter States
-    let currentMode = "reader"; // 'reader' | 'admin'
-    let activeCategoryFilter = "All";
-    let searchQuery = "";
-    let presetCoverIndex = 0;
 
     /**
      * Deep clone utility for clean JSON state separation
@@ -992,76 +1442,60 @@
     }
 
     /* ==========================================================================
-       DUAL-MODE NAVIGATION (Reader View <-> Admin Studio)
-       ========================================================================== */
-    function switchMode(mode) {
-      currentMode = mode;
-      const readerEl = document.getElementById("readerView");
-      const adminEl = document.getElementById("adminView");
-      const btnReader = document.getElementById("btnModeReader");
-      const btnAdmin = document.getElementById("btnModeAdmin");
-
-      if (mode === "reader") {
-        readerEl.classList.remove("hidden");
-        adminEl.classList.add("hidden");
-        btnReader.className = "flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-slate-900 shadow-sm";
-        btnAdmin.className = "flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white";
-        renderReaderView();
-      } else {
-        readerEl.classList.add("hidden");
-        adminEl.classList.remove("hidden");
-        btnAdmin.className = "flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-sm";
-        btnReader.className = "flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white";
-        syncAdminStudioUI();
-      }
-    }
-
-    function switchAdminTab(tabName) {
-      document.querySelectorAll(".admin-tab-panel").forEach(p => p.classList.add("hidden"));
-      document.getElementById(`adminTab-${tabName}`).classList.remove("hidden");
-
-      document.querySelectorAll(".admin-tab-btn").forEach(btn => {
-        btn.className = "admin-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent whitespace-nowrap";
-      });
-      const activeBtn = document.getElementById(`tabBtn-${tabName}`);
-      activeBtn.className = "admin-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-amber-500/15 text-amber-400 border border-amber-500/30 whitespace-nowrap";
-
-      if (tabName === "json") {
-        document.getElementById("jsonEditorTextarea").value = JSON.stringify(draftState, null, 2);
-      }
-    }
-
-    /* ==========================================================================
-       READER VIEW RENDERING ENGINE
+       READER VIEW RENDERING PIPELINE
        ========================================================================== */
     function renderReaderView() {
+      const readerRoot = document.getElementById("readerView");
       const theme = getActiveTheme(publishedState);
       const template = getActiveTemplate(publishedState);
-      const readerRoot = document.getElementById("readerView");
 
-      // 1. Apply active theme CSS variables to Reader View and Root
+      // 1. Apply active theme CSS variables & Scoped Custom CSS
       applyThemeTokensToElement(theme, document.documentElement);
       applyThemeTokensToElement(theme, readerRoot);
+      document.getElementById("dynamicReaderTemplateCss").textContent = template.rules.customCss || "";
 
       // Update Top Bar Status & Footer Badges
       document.getElementById("topStatusSummary").textContent = `Live: ${theme.name} • ${template.name}`;
       document.getElementById("readerActiveBadges").textContent = `Theme: ${theme.name} | Template: ${template.name}`;
       document.getElementById("readerFooterText").textContent = publishedState.siteConfig.footerText;
 
-      // 2. Render Masthead Header
-      const isCentered = template.rules.headerAlign === "center";
-      document.getElementById("readerBlogHeader").innerHTML = `
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 ${isCentered ? 'text-center' : 'text-left'}">
-          <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest mb-3 blog-accent-text">
-            <span>●</span>
-            <span>Curated Publication</span>
+      // 2. Render Masthead Header (Supports Left, Center, Split)
+      const align = template.rules.headerAlign || "left";
+      const headerInnerHtml = align === "split"
+        ? `
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest mb-2 blog-accent-text">
+                <span>●</span><span>Curated Publication</span>
+              </div>
+              <h1 class="blog-heading text-3xl sm:text-5xl font-extrabold tracking-tight">
+                ${escapeHtml(publishedState.siteConfig.title)}
+              </h1>
+            </div>
+            <p class="blog-text-muted text-sm sm:text-base max-w-md md:text-right">
+              ${escapeHtml(publishedState.siteConfig.tagline)}
+            </p>
           </div>
-          <h1 class="blog-heading text-3xl sm:text-5xl font-extrabold tracking-tight mb-3">
-            ${escapeHtml(publishedState.siteConfig.title)}
-          </h1>
-          <p class="blog-text-muted text-base sm:text-lg max-w-2xl ${isCentered ? 'mx-auto' : ''}">
-            ${escapeHtml(publishedState.siteConfig.tagline)}
-          </p>
+        `
+        : `
+          <div class="${align === 'center' ? 'text-center' : 'text-left'}">
+            <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest mb-3 blog-accent-text">
+              <span>●</span>
+              <span>Curated Publication</span>
+            </div>
+            <h1 class="blog-heading text-3xl sm:text-5xl font-extrabold tracking-tight mb-3">
+              ${escapeHtml(publishedState.siteConfig.title)}
+            </h1>
+            <p class="blog-text-muted text-base sm:text-lg max-w-2xl ${align === 'center' ? 'mx-auto' : ''}">
+              ${escapeHtml(publishedState.siteConfig.tagline)}
+            </p>
+          </div>
+        `;
+
+      const widthClass = getContainerWidthClass(template.rules.containerWidth);
+      document.getElementById("readerBlogHeader").innerHTML = `
+        <div class="${widthClass} mx-auto px-4 sm:px-6 py-10 sm:py-14">
+          ${headerInnerHtml}
         </div>
       `;
 
@@ -1101,6 +1535,8 @@
 
       // 5. Render Main Content According to Template Layout Rules
       const container = document.getElementById("readerContentContainer");
+      container.className = `${widthClass} mx-auto px-4 sm:px-6 py-6 custom-tpl-scope transition-all duration-300`;
+
       if (filteredPosts.length === 0) {
         container.innerHTML = `
           <div class="blog-surface border p-12 text-center">
@@ -1113,6 +1549,25 @@
       }
 
       container.innerHTML = generateTemplateMarkup(publishedState, template, filteredPosts, false);
+    }
+
+    function getContainerWidthClass(widthRule) {
+      if (widthRule === "narrow") return "max-w-3xl";
+      if (widthRule === "wide") return "max-w-7xl";
+      return "max-w-6xl";
+    }
+
+    function getCardGapClass(gapRule) {
+      if (gapRule === "compact") return "gap-3";
+      if (gapRule === "airy") return "gap-9";
+      return "gap-6";
+    }
+
+    function getAspectRatioClass(aspectRule, isMini) {
+      if (aspectRule === "none") return "hidden";
+      if (aspectRule === "1:1") return "aspect-square";
+      if (aspectRule === "4:3") return "aspect-[4/3]";
+      return isMini ? "h-28" : "aspect-video";
     }
 
     function filterReaderCategory(cat) {
@@ -1133,33 +1588,56 @@
     }
 
     /**
-     * SHARED TEMPLATE RENDERER
-     * Generates HTML for both the full Reader View and the Live Studio Mini-Preview
+     * SHARED TEMPLATE RENDERER (Supports All 7 Layout Engines + Granular Slot Rules)
      */
     function generateTemplateMarkup(stateObj, template, posts, isMiniPreview) {
-      const rules = template.rules;
+      const rules = {
+        layoutType: "hero-grid",
+        columns: 2,
+        cardGap: "normal",
+        containerWidth: "standard",
+        showHero: true,
+        showSidebar: false,
+        showImages: true,
+        showExcerpts: true,
+        showBadges: true,
+        showMeta: true,
+        showReadTime: true,
+        cardStyle: "elevated",
+        imageAspect: "16:9",
+        headerAlign: "left",
+        ...template.rules
+      };
+
       const cardClass =
         rules.cardStyle === "bordered" ? "blog-card-bordered" :
-        rules.cardStyle === "flat" ? "blog-card-flat" : "blog-card-elevated";
+        rules.cardStyle === "flat" ? "blog-card-flat" :
+        rules.cardStyle === "glass" ? "blog-card-glass" :
+        rules.cardStyle === "minimal-line" ? "blog-card-minimal-line" :
+        "blog-card-elevated";
 
-      // Separate Hero Post if showHero is enabled and we have > 1 post
+      const gapClass = getCardGapClass(rules.cardGap);
+      const showImg = rules.showImages && rules.imageAspect !== "none";
+      const aspectClass = getAspectRatioClass(rules.imageAspect, isMiniPreview);
+
+      // Separate Hero Post if showHero is enabled
       let heroPost = null;
-      let gridPosts = [...posts];
-      if (rules.showHero && gridPosts.length > 0) {
-        const featuredIdx = gridPosts.findIndex(p => p.featured);
-        heroPost = featuredIdx >= 0 ? gridPosts.splice(featuredIdx, 1)[0] : gridPosts.shift();
+      let listPosts = [...posts];
+      if (rules.showHero && listPosts.length > 0) {
+        const featuredIdx = listPosts.findIndex(p => p.featured);
+        heroPost = featuredIdx >= 0 ? listPosts.splice(featuredIdx, 1)[0] : listPosts.shift();
       }
 
-      // Hero HTML
+      // 1. Optional Featured Hero Banner
       let heroHtml = "";
       if (heroPost) {
         heroHtml = `
           <article
             onclick="${isMiniPreview ? '' : `openArticleModal('${heroPost.id}')`}"
-            class="${cardClass} overflow-hidden mb-8 transition-transform duration-300 ${isMiniPreview ? '' : 'cursor-pointer hover:-translate-y-1'} grid grid-cols-1 ${rules.showImages ? 'md:grid-cols-12' : ''}"
+            class="${cardClass} overflow-hidden mb-8 transition-transform duration-300 ${isMiniPreview ? '' : 'cursor-pointer hover:-translate-y-1'} grid grid-cols-1 ${showImg ? 'md:grid-cols-12' : ''}"
           >
-            ${rules.showImages ? `
-              <div class="md:col-span-7 overflow-hidden bg-slate-800 ${isMiniPreview ? 'h-40' : 'h-64 md:h-auto'}">
+            ${showImg ? `
+              <div class="md:col-span-7 overflow-hidden bg-slate-800 ${isMiniPreview ? 'h-36' : 'h-64 md:h-auto'}">
                 <img
                   src="${escapeHtml(heroPost.coverImage)}"
                   alt="${escapeHtml(heroPost.title)}"
@@ -1168,12 +1646,14 @@
                 />
               </div>
             ` : ''}
-            <div class="${rules.showImages ? 'md:col-span-5' : 'col-span-12'} p-6 sm:p-8 flex flex-col justify-center">
-              <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider mb-3 blog-accent-text">
-                <span>★ Featured</span>
-                <span>•</span>
-                <span>${escapeHtml(heroPost.category)}</span>
-              </div>
+            <div class="${showImg ? 'md:col-span-5' : 'col-span-12'} p-6 sm:p-8 flex flex-col justify-center">
+              ${rules.showBadges ? `
+                <div class="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider mb-3 blog-accent-text">
+                  <span>★ Featured</span>
+                  <span>•</span>
+                  <span>${escapeHtml(heroPost.category)}</span>
+                </div>
+              ` : ''}
               <h2 class="blog-heading ${isMiniPreview ? 'text-lg' : 'text-2xl sm:text-3xl'} font-bold leading-snug mb-3">
                 ${escapeHtml(heroPost.title)}
               </h2>
@@ -1182,89 +1662,231 @@
                   ${escapeHtml(heroPost.excerpt)}
                 </p>
               ` : ''}
-              <div class="flex items-center justify-between text-xs blog-text-muted pt-3 border-t" style="border-color: var(--border-color);">
-                <span class="font-medium">${escapeHtml(heroPost.author)}</span>
-                <span>${escapeHtml(heroPost.readTime)}</span>
-              </div>
+              ${(rules.showMeta || rules.showReadTime) ? `
+                <div class="flex items-center justify-between text-xs blog-text-muted pt-3 border-t" style="border-color: var(--border-color);">
+                  <span>${rules.showMeta ? escapeHtml(heroPost.author) : ''}</span>
+                  <span>${rules.showReadTime ? escapeHtml(heroPost.readTime) : ''}</span>
+                </div>
+              ` : ''}
             </div>
           </article>
         `;
       }
 
-      // Determine Grid Columns Class
-      const cols = isMiniPreview ? Math.min(rules.columns, 2) : rules.columns;
-      const gridColsClass =
-        cols === 1 ? "grid-cols-1" :
-        cols === 3 ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" :
-        "grid-cols-1 md:grid-cols-2";
+      // 2. Engine-Specific Body Rendering
+      let bodyMarkup = "";
 
-      // Render Post Cards
-      const cardsHtml = gridPosts.map((post, idx) => {
-        // Bento layout spans first item wider on 3-col layout
-        const bentoSpan = (rules.layoutType === "bento" && !isMiniPreview && cols === 3 && idx === 0)
-          ? "lg:col-span-2"
-          : "";
+      if (rules.layoutType === "changelog-timeline") {
+        // ENGINE A: CHANGELOG TIMELINE
+        bodyMarkup = `
+          <div class="layout-timeline py-2">
+            ${listPosts.map(post => `
+              <article
+                onclick="${isMiniPreview ? '' : `openArticleModal('${post.id}')`}"
+                class="timeline-node ${cardClass} p-5 sm:p-6 transition-all duration-300 ${isMiniPreview ? '' : 'cursor-pointer hover:translate-x-1'}"
+              >
+                <span class="timeline-dot"></span>
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                  <div class="flex items-center gap-2">
+                    ${rules.showBadges ? `
+                      <span class="text-[11px] font-mono font-bold px-2.5 py-0.5 blog-accent-bg blog-radius">
+                        ${escapeHtml(post.versionTag || post.category)}
+                      </span>
+                      <span class="text-xs font-semibold uppercase tracking-wider blog-text-muted">${escapeHtml(post.category)}</span>
+                    ` : ''}
+                  </div>
+                  ${rules.showMeta ? `<time class="text-xs font-mono blog-text-muted">${escapeHtml(post.date)}</time>` : ''}
+                </div>
 
-        return `
-          <article
-            onclick="${isMiniPreview ? '' : `openArticleModal('${post.id}')`}"
-            class="${cardClass} ${bentoSpan} overflow-hidden flex flex-col justify-between transition-all duration-300 ${isMiniPreview ? '' : 'cursor-pointer hover:-translate-y-1'}"
-          >
-            <div>
-              ${rules.showImages ? `
-                <div class="overflow-hidden bg-slate-800 ${isMiniPreview ? 'h-28' : (rules.layoutType === 'stream' ? 'h-64' : 'h-48')}">
-                  <img
-                    src="${escapeHtml(post.coverImage)}"
-                    alt="${escapeHtml(post.title)}"
-                    onerror="handleImgError(this, '${escapeHtml(post.title)}')"
-                    class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  />
-                </div>
-              ` : ''}
-              <div class="${isMiniPreview ? 'p-4' : 'p-6'}">
-                <div class="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-wider mb-2 blog-accent-text">
-                  <span>${escapeHtml(post.category)}</span>
-                  <span class="blog-text-muted font-normal">${escapeHtml(post.date)}</span>
-                </div>
-                <h3 class="blog-heading ${isMiniPreview ? 'text-base' : 'text-xl'} font-bold leading-snug mb-2.5">
+                <h3 class="blog-heading ${isMiniPreview ? 'text-base' : 'text-xl sm:text-2xl'} font-bold mb-2">
                   ${escapeHtml(post.title)}
                 </h3>
-                ${rules.showExcerpts ? `
-                  <p class="blog-text-muted text-sm leading-relaxed line-clamp-3">
-                    ${escapeHtml(post.excerpt)}
-                  </p>
+
+                ${showImg ? `
+                  <div class="my-3 overflow-hidden blog-radius ${aspectClass}">
+                    <img src="${escapeHtml(post.coverImage)}" alt="${escapeHtml(post.title)}" onerror="handleImgError(this, '${escapeHtml(post.title)}')" class="w-full h-full object-cover" />
+                  </div>
                 ` : ''}
-              </div>
-            </div>
 
-            <div class="${isMiniPreview ? 'px-4 py-2.5' : 'px-6 py-4'} border-t flex items-center justify-between text-xs blog-text-muted" style="border-color: var(--border-color);">
-              <span class="font-medium">${escapeHtml(post.author)}</span>
-              <span class="font-semibold blog-accent-text">${escapeHtml(post.readTime)} →</span>
-            </div>
-          </article>
+                ${rules.showExcerpts ? `
+                  <p class="blog-text-muted text-sm leading-relaxed mb-3">${escapeHtml(post.excerpt)}</p>
+                ` : ''}
+
+                ${(rules.showMeta || rules.showReadTime) ? `
+                  <div class="flex items-center justify-between text-xs blog-text-muted pt-2">
+                    <span>${rules.showMeta ? `Shipped by ${escapeHtml(post.author)}` : ''}</span>
+                    <span class="font-semibold blog-accent-text">${rules.showReadTime ? `${escapeHtml(post.readTime)} →` : 'Read notes →'}</span>
+                  </div>
+                ` : ''}
+              </article>
+            `).join("")}
+          </div>
         `;
-      }).join("");
+      } else if (rules.layoutType === "newsletter-digest") {
+        // ENGINE B: NEWSLETTER ISSUE DIGEST
+        bodyMarkup = `
+          <div class="${cardClass} divide-y overflow-hidden" style="border-color: var(--border-color);">
+            ${listPosts.map((post, idx) => `
+              <article
+                onclick="${isMiniPreview ? '' : `openArticleModal('${post.id}')`}"
+                class="newsletter-issue-row p-5 sm:p-6 flex flex-col sm:flex-row sm:items-start gap-4 ${isMiniPreview ? '' : 'cursor-pointer'}"
+              >
+                <div class="text-2xl sm:text-3xl font-mono font-extrabold blog-accent-text opacity-80 shrink-0 leading-none pt-1">
+                  0${idx + 1}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2 text-xs mb-1.5">
+                    ${rules.showBadges ? `<span class="font-bold uppercase tracking-wider blog-accent-text">${escapeHtml(post.category)}</span>` : ''}
+                    ${rules.showMeta ? `<span class="blog-text-muted">• ${escapeHtml(post.date)}</span>` : ''}
+                    ${rules.showReadTime ? `<span class="ml-auto text-[11px] font-mono px-2 py-0.5 rounded border blog-text-muted" style="border-color: var(--border-color);">${escapeHtml(post.readTime)}</span>` : ''}
+                  </div>
+                  <h3 class="blog-heading ${isMiniPreview ? 'text-base' : 'text-xl'} font-bold leading-snug mb-1.5">
+                    ${escapeHtml(post.title)}
+                  </h3>
+                  ${rules.showExcerpts ? `
+                    <p class="blog-text-muted text-sm leading-relaxed">${escapeHtml(post.excerpt)}</p>
+                  ` : ''}
+                </div>
+                ${showImg ? `
+                  <div class="w-full sm:w-28 h-20 shrink-0 overflow-hidden blog-radius">
+                    <img src="${escapeHtml(post.coverImage)}" alt="${escapeHtml(post.title)}" onerror="handleImgError(this, '${escapeHtml(post.title)}')" class="w-full h-full object-cover" />
+                  </div>
+                ` : ''}
+              </article>
+            `).join("")}
+          </div>
+        `;
+      } else if (rules.layoutType === "portfolio-grid") {
+        // ENGINE C: PORTFOLIO CASE-STUDY GRID
+        const cols = isMiniPreview ? Math.min(rules.columns, 2) : rules.columns;
+        const gridColsClass =
+          cols === 1 ? "grid-cols-1" :
+          cols === 3 ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" :
+          cols === 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" :
+          "grid-cols-1 md:grid-cols-2";
 
-      // Wrap in Split Sidebar Layout if layoutType === 'sidebar'
-      if (rules.layoutType === "sidebar" && !isMiniPreview) {
+        bodyMarkup = `
+          <div class="grid ${gridColsClass} ${gapClass}">
+            ${listPosts.map(post => `
+              <article
+                onclick="${isMiniPreview ? '' : `openArticleModal('${post.id}')`}"
+                class="${cardClass} group relative overflow-hidden flex flex-col justify-end transition-all duration-300 ${isMiniPreview ? 'min-h-[220px]' : 'min-h-[340px]'} ${isMiniPreview ? '' : 'cursor-pointer hover:-translate-y-1'}"
+              >
+                <img
+                  src="${escapeHtml(post.coverImage)}"
+                  alt="${escapeHtml(post.title)}"
+                  onerror="handleImgError(this, '${escapeHtml(post.title)}')"
+                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div class="portfolio-card-overlay absolute inset-0"></div>
+
+                <div class="relative z-10 p-6 text-white">
+                  <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                    ${rules.showBadges ? `
+                      <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full blog-accent-bg">
+                        ${escapeHtml(post.versionTag || post.category)}
+                      </span>
+                    ` : '<span></span>'}
+                    ${rules.showReadTime ? `<span class="text-xs font-mono text-white/80">${escapeHtml(post.readTime)}</span>` : ''}
+                  </div>
+                  <h3 class="blog-heading ${isMiniPreview ? 'text-lg' : 'text-2xl'} font-bold text-white leading-snug mb-2">
+                    ${escapeHtml(post.title)}
+                  </h3>
+                  ${rules.showExcerpts ? `
+                    <p class="text-xs sm:text-sm text-white/80 line-clamp-2 mb-3">${escapeHtml(post.excerpt)}</p>
+                  ` : ''}
+                  ${rules.showMeta ? `
+                    <div class="text-xs text-white/70 font-medium">Lead: ${escapeHtml(post.author)} • ${escapeHtml(post.date)}</div>
+                  ` : ''}
+                </div>
+              </article>
+            `).join("")}
+          </div>
+        `;
+      } else {
+        // STANDARD MULTI-COLUMN / STREAM / BENTO ENGINES
+        const cols = isMiniPreview ? Math.min(rules.columns, 2) : rules.columns;
+        const gridColsClass =
+          cols === 1 ? "grid-cols-1" :
+          cols === 3 ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" :
+          cols === 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" :
+          "grid-cols-1 md:grid-cols-2";
+
+        bodyMarkup = `
+          <div class="grid ${gridColsClass} ${gapClass}">
+            ${listPosts.map((post, idx) => {
+              const bentoSpan = (rules.layoutType === "bento-masonry" && !isMiniPreview && cols >= 3 && idx === 0)
+                ? "lg:col-span-2"
+                : "";
+
+              return `
+                <article
+                  onclick="${isMiniPreview ? '' : `openArticleModal('${post.id}')`}"
+                  class="${cardClass} ${bentoSpan} overflow-hidden flex flex-col justify-between transition-all duration-300 ${isMiniPreview ? '' : 'cursor-pointer hover:-translate-y-1'}"
+                >
+                  <div>
+                    ${showImg ? `
+                      <div class="overflow-hidden bg-slate-800 ${aspectClass}">
+                        <img
+                          src="${escapeHtml(post.coverImage)}"
+                          alt="${escapeHtml(post.title)}"
+                          onerror="handleImgError(this, '${escapeHtml(post.title)}')"
+                          class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        />
+                      </div>
+                    ` : ''}
+                    <div class="${isMiniPreview ? 'p-4' : 'p-6'}">
+                      ${(rules.showBadges || rules.showMeta) ? `
+                        <div class="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-wider mb-2 blog-accent-text">
+                          <span>${rules.showBadges ? escapeHtml(post.category) : ''}</span>
+                          <span class="blog-text-muted font-normal">${rules.showMeta ? escapeHtml(post.date) : ''}</span>
+                        </div>
+                      ` : ''}
+                      <h3 class="blog-heading ${isMiniPreview ? 'text-base' : 'text-xl'} font-bold leading-snug mb-2.5">
+                        ${escapeHtml(post.title)}
+                      </h3>
+                      ${rules.showExcerpts ? `
+                        <p class="blog-text-muted text-sm leading-relaxed line-clamp-3">
+                          ${escapeHtml(post.excerpt)}
+                        </p>
+                      ` : ''}
+                    </div>
+                  </div>
+
+                  ${(rules.showMeta || rules.showReadTime) ? `
+                    <div class="${isMiniPreview ? 'px-4 py-2.5' : 'px-6 py-4'} border-t flex items-center justify-between text-xs blog-text-muted" style="border-color: var(--border-color);">
+                      <span class="font-medium">${rules.showMeta ? escapeHtml(post.author) : ''}</span>
+                      <span class="font-semibold blog-accent-text">${rules.showReadTime ? `${escapeHtml(post.readTime)} →` : ''}</span>
+                    </div>
+                  ` : ''}
+                </article>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
+
+      // 3. Optional Split Sidebar Wrapper (Triggered by layoutType === 'split-sidebar' OR rules.showSidebar)
+      const useSidebar = (rules.layoutType === "split-sidebar" || rules.showSidebar) && !isMiniPreview;
+      if (useSidebar) {
         return `
           ${heroHtml}
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div class="lg:col-span-8 grid ${gridColsClass} gap-6">
-              ${cardsHtml}
+            <div class="lg:col-span-8">
+              ${bodyMarkup}
             </div>
             <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
               <div class="blog-surface border p-6">
-                <h4 class="blog-heading text-lg font-bold mb-2">About the Journal</h4>
+                <h4 class="blog-heading text-lg font-bold mb-2">About the Publication</h4>
                 <p class="blog-text-muted text-sm leading-relaxed mb-4">
                   ${escapeHtml(stateObj.siteConfig.tagline)}
                 </p>
                 <div class="text-xs font-mono pt-3 border-t blog-text-muted" style="border-color: var(--border-color);">
-                  ${stateObj.posts.length} Published Essays
+                  ${stateObj.posts.length} Published Entries
                 </div>
               </div>
               <div class="blog-surface border p-6">
-                <h4 class="blog-heading text-lg font-bold mb-3">Popular Topics</h4>
+                <h4 class="blog-heading text-lg font-bold mb-3">Explore Topics</h4>
                 <div class="flex flex-wrap gap-2">
                   ${[...new Set(stateObj.posts.map(p => p.category))].map(c => `
                     <button onclick="filterReaderCategory('${escapeHtml(c)}')" class="text-xs px-3 py-1.5 border blog-radius hover:opacity-80 transition" style="border-color: var(--border-color);">
@@ -1278,12 +1900,7 @@
         `;
       }
 
-      return `
-        ${heroHtml}
-        <div class="grid ${gridColsClass} gap-6">
-          ${cardsHtml}
-        </div>
-      `;
+      return `${heroHtml}${bodyMarkup}`;
     }
 
     /* ==========================================================================
@@ -1360,13 +1977,13 @@
       renderThemePresetCards();
       syncThemeTokenInputs();
       renderTemplatePresetCards();
-      syncTemplateRuleInputs();
       renderAdminPostsList();
       syncSiteConfigInputs();
       renderLiveStudioPreview();
       markDraftDirty();
 
       document.getElementById("adminPostCount").textContent = draftState.posts.length;
+      document.getElementById("adminTplCount").textContent = draftState.templates.length;
       document.getElementById("jsonEditorTextarea").value = JSON.stringify(draftState, null, 2);
     }
 
@@ -1430,26 +2047,27 @@
 
       const numericRadius = parseInt(t.radius, 10) || 0;
       document.getElementById("inputThemeRadius").value = numericRadius;
-      document.getElementById("valThemeRadius").textContent = `${numericRadius}px`;
+      document.getElementById("valThemeRadius").textContent = t.radius;
 
       document.getElementById("selectFontHeading").value = t.fontHeading;
       document.getElementById("selectFontBody").value = t.fontBody;
     }
 
-    function updateDraftThemeToken(key, value) {
-      const theme = getActiveTheme(draftState);
-      theme.tokens[key] = value;
-
-      // Keep derived border & secondary text harmonious when primary text changes
-      if (key === "textPrimary") {
-        theme.tokens.textSecondary = adjustColorOpacity(value, 0.72);
-        theme.tokens.borderColor = adjustColorOpacity(value, 0.14);
+    function updateDraftThemeToken(tokenKey, value) {
+      const activeTheme = getActiveTheme(draftState);
+      activeTheme.tokens[tokenKey] = value;
+      if (tokenKey === "bgPrimary") document.getElementById("valThemeBg").textContent = value;
+      if (tokenKey === "bgSurface") document.getElementById("valThemeSurface").textContent = value;
+      if (tokenKey === "textPrimary") {
+        document.getElementById("valThemeText").textContent = value;
+        activeTheme.tokens.textSecondary = adjustColorOpacity(value, 0.72);
+        activeTheme.tokens.borderColor = adjustColorOpacity(value, 0.14);
       }
+      if (tokenKey === "primaryColor") document.getElementById("valThemePrimary").textContent = value;
+      if (tokenKey === "accentColor") document.getElementById("valThemeAccent").textContent = value;
+      if (tokenKey === "radius") document.getElementById("valThemeRadius").textContent = value;
 
-      syncThemeTokenInputs();
-      renderThemePresetCards();
-      renderLiveStudioPreview();
-      markDraftDirty();
+      syncAdminStudioUI();
     }
 
     function saveCustomTheme() {
@@ -1459,114 +2077,55 @@
         showToast("Please enter a name for your custom theme.", "!");
         return;
       }
-
-      const currentTheme = getActiveTheme(draftState);
-      const newId = "custom-theme-" + Date.now();
+      const baseTokens = deepClone(getActiveTheme(draftState).tokens);
       const newTheme = {
-        id: newId,
-        name: name,
-        description: "Custom Studio Theme",
+        id: "custom-theme-" + Date.now(),
+        name,
+        description: "Custom theme created in ThemeCraft Studio",
         isBuiltIn: false,
-        tokens: deepClone(currentTheme.tokens)
+        tokens: baseTokens
       };
-
       draftState.themes.push(newTheme);
-      draftState.activeThemeId = newId;
+      draftState.activeThemeId = newTheme.id;
       nameInput.value = "";
       syncAdminStudioUI();
-      showToast(`Created custom theme "${name}"!`);
+      showToast(`Saved custom theme "${name}"!`);
     }
 
-    /* --- 2. TEMPLATE STUDIO LOGIC --- */
-    function renderTemplatePresetCards() {
-      const grid = document.getElementById("templatePresetGrid");
-      const activeTpl = getActiveTemplate(draftState);
-      document.getElementById("draftTemplateLabel").textContent = `Draft: ${activeTpl.name}`;
+    function switchAdminTab(tabName) {
+      document.querySelectorAll(".admin-tab-panel").forEach(el => el.classList.add("hidden"));
+      document.getElementById(`adminTab-${tabName}`).classList.remove("hidden");
 
-      grid.innerHTML = draftState.templates.map(tpl => {
-        const isSelected = tpl.id === draftState.activeTemplateId;
-        const r = tpl.rules;
-        return `
-          <div
-            onclick="selectDraftTemplate('${tpl.id}')"
-            class="p-3.5 rounded-xl border cursor-pointer transition-all ${
-              isSelected
-                ? 'bg-slate-800/90 border-sky-500 ring-1 ring-sky-500/40'
-                : 'bg-slate-950 border-slate-800 hover:border-slate-700'
-            }"
-          >
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="font-semibold text-sm text-white">${escapeHtml(tpl.name)}</span>
-              ${isSelected ? '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-sky-500 text-slate-950">Active</span>' : ''}
-            </div>
-            <p class="text-xs text-slate-400 line-clamp-1 mb-2.5">${escapeHtml(tpl.description || 'Custom layout template')}</p>
-            <div class="flex flex-wrap gap-1.5 text-[10px] font-mono text-slate-300">
-              <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">${r.columns} Col</span>
-              <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">${r.cardStyle}</span>
-              <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">${r.showHero ? 'Hero On' : 'No Hero'}</span>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function selectDraftTemplate(tplId) {
-      draftState.activeTemplateId = tplId;
-      syncAdminStudioUI();
-    }
-
-    function syncTemplateRuleInputs() {
-      const r = getActiveTemplate(draftState).rules;
-      document.getElementById("tplLayoutType").value = r.layoutType;
-      document.getElementById("tplCardStyle").value = r.cardStyle;
-      document.getElementById("tplHeaderAlign").value = r.headerAlign;
-      document.getElementById("tplShowHero").checked = r.showHero;
-      document.getElementById("tplShowImages").checked = r.showImages;
-      document.getElementById("tplShowExcerpts").checked = r.showExcerpts;
-
-      [1, 2, 3].forEach(c => {
-        const btn = document.getElementById(`colBtn-${c}`);
-        btn.className = c === r.columns
-          ? "tpl-col-btn py-2 rounded-xl text-xs font-semibold border border-sky-500 bg-sky-500/20 text-sky-300"
-          : "tpl-col-btn py-2 rounded-xl text-xs font-semibold border border-slate-800 bg-slate-950 text-slate-400";
+      document.querySelectorAll(".admin-tab-btn").forEach(btn => {
+        btn.className = "admin-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent whitespace-nowrap";
       });
-    }
-
-    function updateDraftTemplateRule(ruleKey, value) {
-      const tpl = getActiveTemplate(draftState);
-      tpl.rules[ruleKey] = value;
-      syncTemplateRuleInputs();
-      renderTemplatePresetCards();
-      renderLiveStudioPreview();
-      markDraftDirty();
-    }
-
-    function saveCustomTemplate() {
-      const nameInput = document.getElementById("newCustomTemplateName");
-      const name = nameInput.value.trim();
-      if (!name) {
-        showToast("Please enter a name for your custom template.", "!");
-        return;
+      const activeBtn = document.getElementById(`tabBtn-${tabName}`);
+      if (activeBtn) {
+        activeBtn.className = "admin-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-amber-500/15 text-amber-400 border border-amber-500/30 whitespace-nowrap";
       }
-
-      const currentTpl = getActiveTemplate(draftState);
-      const newId = "custom-tpl-" + Date.now();
-      const newTpl = {
-        id: newId,
-        name: name,
-        description: "Custom Studio Layout Template",
-        isBuiltIn: false,
-        rules: deepClone(currentTpl.rules)
-      };
-
-      draftState.templates.push(newTpl);
-      draftState.activeTemplateId = newId;
-      nameInput.value = "";
-      syncAdminStudioUI();
-      showToast(`Saved template "${name}"!`);
     }
 
-    /* --- 3. BLOG POST MANAGER & SITE CONFIG --- */
+    function renderLiveStudioPreview() {
+      const canvas = document.getElementById("liveStudioPreviewCanvas");
+      if (!canvas) return;
+      const theme = getActiveTheme(draftState);
+      const template = getActiveTemplate(draftState);
+
+      applyThemeTokensToElement(theme, canvas);
+      document.getElementById("previewMetaTag").textContent = `${theme.name} • ${template.name}`;
+
+      canvas.innerHTML = `
+        <div class="blog-canvas p-4 sm:p-5">
+          <div class="border-b pb-4 mb-5" style="border-color: var(--border-color);">
+            <div class="text-[10px] font-bold uppercase tracking-widest blog-accent-text mb-1">● Live Draft Preview</div>
+            <h2 class="blog-heading text-xl font-extrabold">${escapeHtml(draftState.siteConfig.title)}</h2>
+            <p class="blog-text-muted text-xs mt-1">${escapeHtml(draftState.siteConfig.tagline)}</p>
+          </div>
+          ${generateTemplateMarkup(draftState, template, draftState.posts.slice(0, 4), true)}
+        </div>
+      `;
+    }
+
     function syncSiteConfigInputs() {
       document.getElementById("inputSiteTitle").value = draftState.siteConfig.title;
       document.getElementById("inputSiteTagline").value = draftState.siteConfig.tagline;
@@ -1579,22 +2138,27 @@
     }
 
     function renderAdminPostsList() {
-      const list = document.getElementById("adminPostsList");
-      list.innerHTML = draftState.posts.map(post => `
+      const container = document.getElementById("adminPostsList");
+      if (!container) return;
+      container.innerHTML = draftState.posts.map(post => `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800">
           <div class="min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-amber-400">${escapeHtml(post.category)}</span>
-              ${post.featured ? '<span class="text-[10px] font-bold text-emerald-400">★ Featured</span>' : ''}
+            <div class="flex items-center gap-2 text-[11px] font-mono text-amber-400 mb-0.5">
+              <span>${escapeHtml(post.category)}</span>
+              <span>•</span>
+              <span class="text-slate-400">${escapeHtml(post.date)}</span>
+              ${post.featured ? '<span class="px-1.5 py-0.2 bg-amber-500/20 text-amber-300 rounded">Featured</span>' : ''}
             </div>
             <h4 class="text-sm font-semibold text-white truncate">${escapeHtml(post.title)}</h4>
-            <p class="text-xs text-slate-400">${escapeHtml(post.author)} • ${escapeHtml(post.readTime)}</p>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <button onclick="editBlogPost('${post.id}')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200">
+            <button onclick="toggleFeaturedPost('${post.id}')" class="px-2.5 py-1.5 rounded-lg text-xs border border-slate-700 hover:bg-slate-800 text-slate-300">
+              ${post.featured ? '★ Featured' : '☆ Feature'}
+            </button>
+            <button onclick="editBlogPost('${post.id}')" class="px-2.5 py-1.5 rounded-lg text-xs bg-slate-800 hover:bg-slate-700 text-white">
               Edit
             </button>
-            <button onclick="deleteBlogPost('${post.id}')" class="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-xs font-medium text-rose-400">
+            <button onclick="deleteBlogPost('${post.id}')" class="px-2.5 py-1.5 rounded-lg text-xs text-rose-400 hover:bg-rose-500/15">
               Delete
             </button>
           </div>
@@ -1602,12 +2166,371 @@
       `).join("");
     }
 
-    function cyclePresetCoverImage() {
-      const url = PRESET_COVER_IMAGES[presetCoverIndex % PRESET_COVER_IMAGES.length];
-      presetCoverIndex++;
-      document.getElementById("postImageInput").value = url;
+    function toggleFeaturedPost(postId) {
+      draftState.posts.forEach(p => {
+        p.featured = (p.id === postId) ? !p.featured : false;
+      });
+      syncAdminStudioUI();
     }
 
+    const PRESET_COVER_IMAGES = [
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80"
+    ];
+
+    function cyclePresetCoverImage() {
+      presetCoverIndex = (presetCoverIndex + 1) % PRESET_COVER_IMAGES.length;
+      document.getElementById("postImageInput").value = PRESET_COVER_IMAGES[presetCoverIndex];
+    }
+
+    function copyJsonState() {
+      const ta = document.getElementById("jsonEditorTextarea");
+      ta.select();
+      document.execCommand("copy");
+      showToast("Full JSON state copied to clipboard!");
+    }
+
+    function applyRawJsonInput() {
+      try {
+        const parsed = JSON.parse(document.getElementById("jsonEditorTextarea").value);
+        if (!parsed.themes || !parsed.templates || !parsed.posts) {
+          throw new Error("JSON must include themes, templates, and posts arrays.");
+        }
+        draftState = parsed;
+        syncAdminStudioUI();
+        document.getElementById("jsonValidationMsg").textContent = "Valid JSON applied to draft state!";
+        showToast("JSON configuration applied to Studio!");
+      } catch (e) {
+        document.getElementById("jsonValidationMsg").textContent = "Error: " + e.message;
+        showToast("Invalid JSON: " + e.message, "!");
+      }
+    }
+
+    /* --- 2. TEMPLATE LIBRARY MANAGER (IN ADMIN DASHBOARD) --- */
+    function renderTemplatePresetCards() {
+      const grid = document.getElementById("templatePresetGrid");
+
+      grid.innerHTML = draftState.templates.map(tpl => {
+        const isSelected = tpl.id === draftState.activeTemplateId;
+        const r = tpl.rules;
+        return `
+          <div
+            class="p-4 rounded-xl border transition-all flex flex-col justify-between ${
+              isSelected
+                ? 'bg-slate-800/90 border-sky-500 ring-1 ring-sky-500/40'
+                : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+            }"
+          >
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="font-semibold text-sm text-white">${escapeHtml(tpl.name)}</span>
+                ${isSelected ? '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-sky-500 text-slate-950">Active</span>' : ''}
+              </div>
+              <p class="text-xs text-slate-400 line-clamp-2 mb-3">${escapeHtml(tpl.description || 'Custom layout template')}</p>
+              <div class="flex flex-wrap gap-1.5 text-[10px] font-mono text-slate-300 mb-4">
+                <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">${r.layoutType}</span>
+                <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">${r.columns} Col</span>
+                <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">${r.cardStyle}</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-800/80">
+              <button onclick="selectDraftTemplate('${tpl.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-white transition">
+                Select
+              </button>
+              <button onclick="editTemplateInDesigner('${tpl.id}')" class="px-2.5 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-xs font-medium text-sky-400 border border-sky-500/30 transition">
+                Edit in Designer
+              </button>
+              <button onclick="duplicateTemplate('${tpl.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-xs text-slate-400 hover:text-white border border-slate-800 transition">
+                Clone
+              </button>
+              ${!tpl.isBuiltIn ? `
+                <button onclick="deleteCustomTemplate('${tpl.id}')" class="ml-auto px-2 py-1.5 rounded-lg text-xs text-rose-400 hover:bg-rose-500/15 transition">
+                  Delete
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selectDraftTemplate(tplId) {
+      draftState.activeTemplateId = tplId;
+      syncAdminStudioUI();
+      showToast("Template selected in draft. Click Publish to apply!");
+    }
+
+    function duplicateTemplate(tplId) {
+      const orig = draftState.templates.find(t => t.id === tplId);
+      if (!orig) return;
+      const copy = deepClone(orig);
+      copy.id = "custom-tpl-" + Date.now();
+      copy.name = orig.name + " (Copy)";
+      copy.isBuiltIn = false;
+      draftState.templates.push(copy);
+      syncAdminStudioUI();
+      showToast(`Cloned "${orig.name}"!`);
+    }
+
+    function deleteCustomTemplate(tplId) {
+      draftState.templates = draftState.templates.filter(t => t.id !== tplId);
+      if (draftState.activeTemplateId === tplId) {
+        draftState.activeTemplateId = draftState.templates[0].id;
+      }
+      syncAdminStudioUI();
+      showToast("Custom template deleted.");
+    }
+
+    /* ==========================================================================
+       DEDICATED VISUAL TEMPLATE DESIGNER STUDIO LOGIC
+       ========================================================================== */
+    function initTemplateDesigner() {
+      // Populate Theme Test Dropdown
+      const themeSelect = document.getElementById("designerThemeSelect");
+      themeSelect.innerHTML = draftState.themes.map(t =>
+        `<option value="${t.id}" ${t.id === draftState.activeThemeId ? 'selected' : ''}>${escapeHtml(t.name)}</option>`
+      ).join("");
+
+      // If designerTemplate isn't initialized yet, load active template
+      if (!designerTemplate) {
+        designerTemplate = deepClone(getActiveTemplate(draftState));
+      }
+
+      syncDesignerControlsUI();
+      renderDesignerCanvas();
+    }
+
+    function editTemplateInDesigner(tplId) {
+      const found = draftState.templates.find(t => t.id === tplId);
+      if (!found) return;
+      designerTemplate = deepClone(found);
+      switchMode("designer");
+      showToast(`Loaded "${found.name}" into Template Designer.`);
+    }
+
+    function openTemplateDesignerWithNew() {
+      createNewBlankTemplateInDesigner();
+      switchMode("designer");
+    }
+
+    function createNewBlankTemplateInDesigner() {
+      designerTemplate = {
+        id: "custom-tpl-" + Date.now(),
+        name: "Untitled Custom Layout",
+        description: "Custom blog layout built in Visual Template Designer",
+        isBuiltIn: false,
+        rules: {
+          layoutType: "hero-grid",
+          columns: 2,
+          cardGap: "normal",
+          containerWidth: "standard",
+          showHero: true,
+          showSidebar: false,
+          showImages: true,
+          showExcerpts: true,
+          showBadges: true,
+          showMeta: true,
+          showReadTime: true,
+          cardStyle: "elevated",
+          imageAspect: "16:9",
+          headerAlign: "left",
+          customCss: ""
+        }
+      };
+      syncDesignerControlsUI();
+      renderDesignerCanvas();
+      showToast("Started fresh blank template!");
+    }
+
+    function syncDesignerControlsUI() {
+      const r = designerTemplate.rules;
+      document.getElementById("desTplName").value = designerTemplate.name || "";
+      document.getElementById("desTplDesc").value = designerTemplate.description || "";
+
+      // Render Layout Engine Cards
+      const picker = document.getElementById("designerLayoutPicker");
+      picker.innerHTML = LAYOUT_ENGINE_CATALOG.map(eng => {
+        const active = r.layoutType === eng.id;
+        return `
+          <button
+            type="button"
+            onclick="updateDesignerRule('layoutType', '${eng.id}')"
+            class="w-full text-left p-2.5 rounded-xl border transition-all flex items-center justify-between gap-2 ${
+              active
+                ? 'bg-sky-500/15 border-sky-500 text-white'
+                : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+            }"
+          >
+            <div>
+              <div class="text-xs font-semibold ${active ? 'text-sky-300' : 'text-white'}">${eng.name}</div>
+              <div class="text-[10px] text-slate-400">${eng.desc}</div>
+            </div>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded ${active ? 'bg-sky-500 text-slate-950 font-bold' : 'bg-slate-900 text-slate-500'}">
+              ${active ? 'ON' : 'USE'}
+            </span>
+          </button>
+        `;
+      }).join("");
+
+      // Columns 1-4
+      document.getElementById("desColLabel").textContent = `${r.columns} Col${r.columns > 1 ? 's' : ''}`;
+      [1, 2, 3, 4].forEach(c => {
+        const btn = document.getElementById(`desColBtn-${c}`);
+        btn.className = c === r.columns
+          ? "des-col-btn py-1.5 rounded-lg text-xs font-semibold border border-sky-500 bg-sky-500/20 text-sky-300"
+          : "des-col-btn py-1.5 rounded-lg text-xs font-semibold border border-slate-800 bg-slate-950 text-slate-400";
+      });
+
+      // Selects
+      document.getElementById("desCardGap").value = r.cardGap || "normal";
+      document.getElementById("desContainerWidth").value = r.containerWidth || "standard";
+      document.getElementById("desCardStyle").value = r.cardStyle || "elevated";
+      document.getElementById("desAspectRatio").value = r.imageAspect || "16:9";
+
+      // Header Alignment Buttons
+      ["left", "center", "split"].forEach(al => {
+        const btn = document.getElementById(`desAlignBtn-${al}`);
+        btn.className = al === (r.headerAlign || "left")
+          ? "des-align-btn py-1.5 rounded-lg text-xs font-semibold border border-sky-500 bg-sky-500/20 text-sky-300"
+          : "des-align-btn py-1.5 rounded-lg text-xs font-medium border border-slate-800 bg-slate-950 text-slate-400";
+      });
+
+      // Checkboxes
+      document.getElementById("desShowHero").checked = r.showHero !== false;
+      document.getElementById("desShowSidebar").checked = !!r.showSidebar;
+      document.getElementById("desShowImages").checked = r.showImages !== false;
+      document.getElementById("desShowExcerpts").checked = r.showExcerpts !== false;
+      document.getElementById("desShowBadges").checked = r.showBadges !== false;
+      document.getElementById("desShowMeta").checked = r.showMeta !== false;
+      document.getElementById("desShowReadTime").checked = r.showReadTime !== false;
+
+      // Custom CSS & JSON Schema Output
+      document.getElementById("desCustomCssInput").value = r.customCss || "";
+      document.getElementById("desTemplateJsonOutput").value = JSON.stringify(designerTemplate, null, 2);
+    }
+
+    function updateDesignerField(field, value) {
+      designerTemplate[field] = value;
+      document.getElementById("desTemplateJsonOutput").value = JSON.stringify(designerTemplate, null, 2);
+    }
+
+    function updateDesignerRule(ruleKey, value) {
+      designerTemplate.rules[ruleKey] = value;
+      syncDesignerControlsUI();
+      renderDesignerCanvas();
+    }
+
+    function setDesignerViewport(vp) {
+      designerViewport = vp;
+      const frame = document.getElementById("designerViewportFrame");
+      ["desktop", "tablet", "mobile"].forEach(mode => {
+        const btn = document.getElementById(`vpBtn-${mode}`);
+        btn.className = mode === vp
+          ? "vp-btn px-2.5 py-1 rounded text-xs font-medium bg-sky-500 text-slate-950"
+          : "vp-btn px-2.5 py-1 rounded text-xs font-medium text-slate-400 hover:text-white";
+      });
+
+      if (vp === "mobile") frame.style.maxWidth = "375px";
+      else if (vp === "tablet") frame.style.maxWidth = "768px";
+      else frame.style.maxWidth = "100%";
+    }
+
+    function renderDesignerCanvas() {
+      const canvas = document.getElementById("designerLiveCanvas");
+      const selectedThemeId = document.getElementById("designerThemeSelect").value || draftState.activeThemeId;
+      const theme = draftState.themes.find(t => t.id === selectedThemeId) || getActiveTheme(draftState);
+
+      applyThemeTokensToElement(theme, canvas);
+      document.getElementById("dynamicDesignerTemplateCss").textContent = designerTemplate.rules.customCss || "";
+
+      const align = designerTemplate.rules.headerAlign || "left";
+      const widthClass = getContainerWidthClass(designerTemplate.rules.containerWidth);
+
+      const headerHtml = align === "split"
+        ? `
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <div class="text-[10px] font-bold uppercase tracking-widest mb-1 blog-accent-text">● Template Preview</div>
+              <h1 class="blog-heading text-2xl sm:text-3xl font-extrabold">${escapeHtml(draftState.siteConfig.title)}</h1>
+            </div>
+            <p class="blog-text-muted text-xs sm:text-sm max-w-xs sm:text-right">${escapeHtml(draftState.siteConfig.tagline)}</p>
+          </div>
+        `
+        : `
+          <div class="${align === 'center' ? 'text-center' : 'text-left'}">
+            <div class="text-[10px] font-bold uppercase tracking-widest mb-1 blog-accent-text">● Template Preview</div>
+            <h1 class="blog-heading text-2xl sm:text-3xl font-extrabold mb-1.5">${escapeHtml(draftState.siteConfig.title)}</h1>
+            <p class="blog-text-muted text-xs sm:text-sm max-w-xl ${align === 'center' ? 'mx-auto' : ''}">${escapeHtml(draftState.siteConfig.tagline)}</p>
+          </div>
+        `;
+
+      canvas.innerHTML = `
+        <div class="border-b" style="border-color: var(--border-color);">
+          <div class="${widthClass} mx-auto px-5 py-7">
+            ${headerHtml}
+          </div>
+        </div>
+        <div class="${widthClass} mx-auto px-5 py-6 custom-tpl-scope">
+          ${generateTemplateMarkup(draftState, designerTemplate, draftState.posts, false)}
+        </div>
+      `;
+    }
+
+    function copyDesignerTemplateJson() {
+      const ta = document.getElementById("desTemplateJsonOutput");
+      ta.select();
+      document.execCommand("copy");
+      showToast("Template JSON copied to clipboard!");
+    }
+
+    function importDesignerTemplateJson() {
+      try {
+        const parsed = JSON.parse(document.getElementById("desTemplateJsonOutput").value);
+        if (!parsed.rules || typeof parsed.rules !== "object") {
+          throw new Error("Template JSON must include a 'rules' object.");
+        }
+        designerTemplate = parsed;
+        syncDesignerControlsUI();
+        renderDesignerCanvas();
+        showToast("Imported Template JSON into Designer!");
+      } catch (e) {
+        showToast("Invalid Template JSON: " + e.message, "!");
+      }
+    }
+
+    function saveDesignedTemplateToLibrary(andPublishLive) {
+      const cleanName = (designerTemplate.name || "").trim() || "Custom Studio Template";
+      designerTemplate.name = cleanName;
+
+      // If editing a built-in template, fork it as a new custom template so built-ins remain intact
+      if (designerTemplate.isBuiltIn) {
+        designerTemplate.id = "custom-tpl-" + Date.now();
+        designerTemplate.isBuiltIn = false;
+        designerTemplate.name = cleanName + " (Custom)";
+      }
+
+      const existingIdx = draftState.templates.findIndex(t => t.id === designerTemplate.id);
+      if (existingIdx >= 0) {
+        draftState.templates[existingIdx] = deepClone(designerTemplate);
+      } else {
+        draftState.templates.push(deepClone(designerTemplate));
+      }
+
+      draftState.activeTemplateId = designerTemplate.id;
+      syncDesignerControlsUI();
+      markDraftDirty();
+
+      if (andPublishLive) {
+        publishToUserView();
+        switchMode("reader");
+      } else {
+        showToast(`Saved "${designerTemplate.name}" to Template Library!`);
+      }
+    }
     function saveBlogPost() {
       const editId = document.getElementById("editPostId").value;
       const title = document.getElementById("postTitleInput").value.trim();
@@ -1617,6 +2540,7 @@
       }
 
       const category = document.getElementById("postCategoryInput").value.trim() || "Editorial";
+      const versionTag = document.getElementById("postVersionTagInput").value.trim() || category;
       const author = document.getElementById("postAuthorInput").value.trim() || "Staff Writer";
       const readTime = document.getElementById("postReadTimeInput").value.trim() || "4 min read";
       const coverImage = document.getElementById("postImageInput").value.trim() || PRESET_COVER_IMAGES[0];
@@ -1628,7 +2552,7 @@
         if (idx !== -1) {
           draftState.posts[idx] = {
             ...draftState.posts[idx],
-            title, category, author, readTime, coverImage, excerpt, content: rawContent
+            title, category, versionTag, author, readTime, coverImage, excerpt, content: rawContent
           };
         }
         showToast("Article updated in draft!");
@@ -1637,6 +2561,7 @@
           id: "post-" + Date.now(),
           title,
           category,
+          versionTag,
           author,
           date: new Date().toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }),
           readTime,
@@ -1663,6 +2588,7 @@
 
       document.getElementById("postTitleInput").value = post.title;
       document.getElementById("postCategoryInput").value = post.category;
+      document.getElementById("postVersionTagInput").value = post.versionTag || "";
       document.getElementById("postAuthorInput").value = post.author;
       document.getElementById("postReadTimeInput").value = post.readTime;
       document.getElementById("postImageInput").value = post.coverImage;
@@ -1686,70 +2612,12 @@
       document.getElementById("btnCancelEditPost").classList.add("hidden");
       document.getElementById("postTitleInput").value = "";
       document.getElementById("postCategoryInput").value = "";
+      document.getElementById("postVersionTagInput").value = "";
       document.getElementById("postAuthorInput").value = "";
       document.getElementById("postReadTimeInput").value = "";
       document.getElementById("postImageInput").value = "";
       document.getElementById("postExcerptInput").value = "";
       document.getElementById("postContentInput").value = "";
-    }
-
-    /* --- 4. LIVE MINI-PREVIEW IN ADMIN STUDIO --- */
-    function renderLiveStudioPreview() {
-      const previewCanvas = document.getElementById("liveStudioPreviewCanvas");
-      const theme = getActiveTheme(draftState);
-      const template = getActiveTemplate(draftState);
-
-      document.getElementById("previewMetaTag").textContent = `${theme.name} • ${template.name}`;
-
-      // Scope CSS variables directly onto the mini-preview container
-      previewCanvas.className = "blog-canvas max-h-[640px] overflow-y-auto transition-all duration-300";
-      applyThemeTokensToElement(theme, previewCanvas);
-
-      const isCentered = template.rules.headerAlign === "center";
-      const headerHtml = `
-        <div class="px-5 py-6 border-b ${isCentered ? 'text-center' : 'text-left'}" style="border-color: var(--border-color);">
-          <div class="text-[10px] font-bold uppercase tracking-widest mb-1 blog-accent-text">● Live Preview</div>
-          <h2 class="blog-heading text-xl font-extrabold mb-1">${escapeHtml(draftState.siteConfig.title)}</h2>
-          <p class="blog-text-muted text-xs">${escapeHtml(draftState.siteConfig.tagline)}</p>
-        </div>
-      `;
-
-      const bodyHtml = `
-        <div class="p-5">
-          ${generateTemplateMarkup(draftState, template, draftState.posts.slice(0, 4), true)}
-        </div>
-      `;
-
-      previewCanvas.innerHTML = headerHtml + bodyHtml;
-    }
-
-    /* --- 5. JSON INSPECTOR, IMPORT/EXPORT & PUBLISH TO USER VIEW --- */
-    function applyRawJsonInput() {
-      const raw = document.getElementById("jsonEditorTextarea").value;
-      const msgEl = document.getElementById("jsonValidationMsg");
-      try {
-        const parsed = JSON.parse(raw);
-        if (!parsed.themes || !parsed.templates || !parsed.posts || !parsed.siteConfig) {
-          throw new Error("Missing required top-level keys (siteConfig, themes, templates, posts).");
-        }
-        draftState = parsed;
-        syncAdminStudioUI();
-        msgEl.textContent = "✓ JSON imported and applied to studio draft!";
-        msgEl.className = "text-xs text-emerald-400";
-        showToast("JSON configuration loaded into draft!");
-      } catch (err) {
-        msgEl.textContent = "✗ JSON Error: " + err.message;
-        msgEl.className = "text-xs text-rose-400";
-        showToast("Invalid JSON syntax. Check error message.", "!");
-      }
-    }
-
-    function copyJsonState() {
-      const textarea = document.getElementById("jsonEditorTextarea");
-      textarea.value = JSON.stringify(draftState, null, 2);
-      textarea.select();
-      document.execCommand("copy");
-      showToast("JSON state copied to clipboard!");
     }
 
     function downloadJsonFile() {
@@ -1818,6 +2686,7 @@
 
     // Initialize Application on Load
     window.addEventListener("DOMContentLoaded", () => {
+      designerTemplate = deepClone(getActiveTemplate(draftState));
       renderReaderView();
       syncAdminStudioUI();
     });
